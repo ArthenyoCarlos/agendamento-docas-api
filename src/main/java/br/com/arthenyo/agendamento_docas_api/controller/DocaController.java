@@ -1,8 +1,10 @@
 package br.com.arthenyo.agendamento_docas_api.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,11 @@ public class DocaController {
 
     public DocaController(DocaService docaService) {
         this.docaService = docaService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DocaResponseDto>> listarDocasAtivas(){
+        return ResponseEntity.ok(docaService.listarDocasAtivas());
     }
 
     @PostMapping

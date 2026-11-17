@@ -1,9 +1,14 @@
 @baseUrl = http://localhost:8080
 
+
+### Lista Docas
+
+GET {{baseUrl}}/docas
+
 ### Criar Doca
 POST {{baseUrl}}/docas
 Content-Type: application/json
 
 {
-  "tipo": "SECA"
+  "tipo": "REFRIGERADA"
 }

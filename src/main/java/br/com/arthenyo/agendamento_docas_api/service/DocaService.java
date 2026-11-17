@@ -1,5 +1,7 @@
 package br.com.arthenyo.agendamento_docas_api.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,14 @@ public class DocaService {
 
     public DocaService(DocaRepository docaRepository) {
         this.docaRepository = docaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocaResponseDto> listarDocasAtivas(){
+        return docaRepository.findByAtivaTrue()
+                    .stream()
+                    .map(DocaResponseDto::new)
+                    .toList();
     }
 
     @Transactional
