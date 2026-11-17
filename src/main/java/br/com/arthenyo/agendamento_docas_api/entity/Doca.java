@@ -1,5 +1,8 @@
 package br.com.arthenyo.agendamento_docas_api.entity;
 
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
+
 import br.com.arthenyo.agendamento_docas_api.entity.enums.TipoDoca;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +21,8 @@ public class Doca {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Generated(event = EventType.INSERT)
+    @Column(name = "codigo", insertable = false, updatable = false)
     private String codigo;
 
     @Column(nullable = false)

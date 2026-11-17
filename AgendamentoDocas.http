@@ -1,0 +1,9 @@
+@baseUrl = http://localhost:8080
+
+### Criar Doca
+POST {{baseUrl}}/docas
+Content-Type: application/json
+
+{
+  "tipo": "SECA"
+}
