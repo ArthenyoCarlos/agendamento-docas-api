@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: agendamento-docas-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:agendamento}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
