@@ -1,6 +1,8 @@
 @baseUrl = http://localhost:8080
 
 
+### DOCAS
+
 ### Lista Docas
 
 GET {{baseUrl}}/docas
@@ -11,4 +13,18 @@ Content-Type: application/json
 
 {
   "tipo": "REFRIGERADA"
+}
+
+
+###----------------------------
+
+
+### FORNECEDOR
+
+POST {{baseUrl}}/fornecedores
+Content-Type: application/json
+
+{
+  "cnpj": "24.292.765/0001-00",
+  "razaoSocial": "Francisco de Sousa Pires Armazem"
 }

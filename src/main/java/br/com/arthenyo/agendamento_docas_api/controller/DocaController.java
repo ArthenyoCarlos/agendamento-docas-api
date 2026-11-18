@@ -3,6 +3,7 @@ package br.com.arthenyo.agendamento_docas_api.controller;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +32,7 @@ public class DocaController {
     }
 
     @PostMapping
-    public ResponseEntity<DocaResponseDto> criarDoca(@RequestBody DocaRequestDto dto){
+    public ResponseEntity<DocaResponseDto> criarDoca(@RequestBody @Valid DocaRequestDto dto){
         DocaResponseDto salvarDoca = docaService.criarDoca(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
         .buildAndExpand(salvarDoca.id()).toUri();
