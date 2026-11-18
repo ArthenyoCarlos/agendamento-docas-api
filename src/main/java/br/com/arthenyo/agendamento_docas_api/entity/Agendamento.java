@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity 
 @Table(name = "tb_agendamento") 
-public class Agenamento {
+public class Agendamento {
 
 
     @Id 
@@ -53,7 +53,7 @@ public class Agenamento {
 
     private LocalDateTime criado_em;
 
-    public Agenamento() {
+    public Agendamento() {
     }
 
     @PrePersist
