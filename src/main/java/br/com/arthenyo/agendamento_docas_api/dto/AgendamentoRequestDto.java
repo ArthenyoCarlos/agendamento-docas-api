@@ -4,18 +4,19 @@ import br.com.arthenyo.agendamento_docas_api.entity.enums.StatusAgendamento;
 import br.com.arthenyo.agendamento_docas_api.entity.enums.TipoCarga;
 import br.com.arthenyo.agendamento_docas_api.validation.Placa;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 public record AgendamentoRequestDto(
-        @NotBlank(message = "O fornecedor é obrigatorio")
-        Long codFornecedor,
+        @NotNull(message = "O fornecedor é obrigatorio")
+        Long fornecedorId,
 
-        @NotBlank(message = "O Doca é obrigatorio")
-        String codDoca,
+        @NotNull(message = "O Doca é obrigatorio")
+        Long docaId,
 
         @NotBlank(message = "A placa do veículo é obrigatória")
-        @Placa
+        @Placa(message = "Placa informada e invalida")
         String placaVeiculo,
 
         LocalDateTime inicio,
@@ -23,10 +24,9 @@ public record AgendamentoRequestDto(
 
         int quantidadePaletes,
 
-        @NotBlank(message = "tipo carga é obrigatorio")
+        @NotNull(message = "tipo carga é obrigatorio")
         TipoCarga tipoCarga,
 
-        @NotBlank(message = "status é obrigatorio")
         StatusAgendamento status,
 
         String motivoCancelamento
