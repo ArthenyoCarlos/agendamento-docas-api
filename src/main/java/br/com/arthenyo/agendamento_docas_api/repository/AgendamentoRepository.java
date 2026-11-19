@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,13 +28,17 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("""
     SELECT a FROM Agendamento a
+    JOIN FETCH a.fornecedor
+    JOIN FETCH a.doca
     WHERE a.doca.id = :docaId
-      AND CAST(a.inicio AS date) = :data
+      AND a.inicio >= :inicioDia
+      AND a.inicio < :inicioDiaSeguinte
     ORDER BY a.inicio ASC
 """)
     List<Agendamento> listarAgendaPorDocaEData(
             @Param("docaId") Long docaId,
-            @Param("data") LocalDate data
+            @Param("inicioDia") LocalDateTime inicioDia,
+            @Param("inicioDiaSeguinte") LocalDateTime inicioDiaSeguinte
     );
 
 

@@ -3,57 +3,41 @@ package br.com.arthenyo.agendamento_docas_api.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
+
 public class CnpjValidator implements ConstraintValidator<CNPJ, String> {
 
+    private static final Pattern FORMATO = Pattern.compile(
+            "[0-9A-Z]{12}[0-9]{2}|[0-9A-Z]{2}\\.[0-9A-Z]{3}\\.[0-9A-Z]{3}/[0-9A-Z]{4}-[0-9]{2}",
+            Pattern.CASE_INSENSITIVE);
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null || value.isBlank()) {
-            return true; // Use @NotNull ou @NotBlank separadamente se for obrigatório
+            return true;
         }
-
-        // Remove caracteres não numéricos
-        String cnpj = value.replaceAll("\\D", "");
-
-        if (cnpj.length() != 14) {
+        if (!FORMATO.matcher(value.trim()).matches()) {
             return false;
         }
 
-        // Rejeita sequências repetidas (ex: 00.000.000/0000-00)
-        if (cnpj.matches("(\\d)\\1{13}")) {
-            return false;
+        String cnpj = normalizar(value);
+        return !cnpj.matches("([0-9])\\1{13}")
+                && calcularDigito(cnpj, 12) == cnpj.charAt(12) - '0'
+                && calcularDigito(cnpj, 13) == cnpj.charAt(13) - '0';
+    }
+
+    public static String normalizar(String cnpj) {
+        return cnpj.trim().toUpperCase(Locale.ROOT).replaceAll("[./-]", "");
+    }
+
+    private int calcularDigito(String cnpj, int tamanhoBase) {
+        int soma = 0;
+        for (int i = tamanhoBase - 1; i >= 0; i--) {
+            int peso = 2 + (tamanhoBase - 1 - i) % 8;
+            soma += (cnpj.charAt(i) - '0') * peso;
         }
-
-        try {
-            // Cálculo do primeiro dígito verificador
-            int soma = 0;
-            int peso = 2;
-            for (int i = 11; i >= 0; i--) {
-                int num = Character.getNumericValue(cnpj.charAt(i));
-                soma += num * peso;
-                peso = (peso + 1) > 9 ? 2 : peso + 1;
-            }
-            int digito1 = 11 - (soma % 11);
-            digito1 = (digito1 > 9) ? 0 : digito1;
-
-            if (digito1 != Character.getNumericValue(cnpj.charAt(12))) {
-                return false;
-            }
-
-            // Cálculo do segundo dígito verificador
-            soma = 0;
-            peso = 2;
-            for (int i = 12; i >= 0; i--) {
-                int num = Character.getNumericValue(cnpj.charAt(i));
-                soma += num * peso;
-                peso = (peso + 1) > 9 ? 2 : peso + 1;
-            }
-            int digito2 = 11 - (soma % 11);
-            digito2 = (digito2 > 9) ? 0 : digito2;
-
-            return digito2 == Character.getNumericValue(cnpj.charAt(13));
-        } catch (NumberFormatException e) {
-            return false;
-        }
+        int resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
     }
 }

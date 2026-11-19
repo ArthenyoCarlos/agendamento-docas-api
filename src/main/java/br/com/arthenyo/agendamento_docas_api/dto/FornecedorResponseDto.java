@@ -10,6 +10,6 @@ public record FornecedorResponseDto(
     public FornecedorResponseDto(Fornecedor entity){
         this(entity.getId(),
             entity.getCnpj(),
-            entity.getRazao_social());
+            entity.getRazaoSocial());
     }
 }

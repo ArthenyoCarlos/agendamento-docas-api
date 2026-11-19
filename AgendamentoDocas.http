@@ -43,7 +43,7 @@ Content-Type: application/json
   "placaVeiculo": "QWE1R23",
   "inicio": "2026-11-20T13:00:00",
   "quantidadePaletes": 10,
-  "tipoCarga": "REFRIGERADA"
+  "tipoCarga": "SECA"
 }
 
 ### Consultar agenda por doca e data

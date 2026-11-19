@@ -3,32 +3,28 @@ package br.com.arthenyo.agendamento_docas_api.service;
 import br.com.arthenyo.agendamento_docas_api.dto.FornecedorRequestDto;
 import br.com.arthenyo.agendamento_docas_api.dto.FornecedorResponseDto;
 import br.com.arthenyo.agendamento_docas_api.entity.Fornecedor;
-import br.com.arthenyo.agendamento_docas_api.exceptions.ConflitosDeDadosExceptions;
-import br.com.arthenyo.agendamento_docas_api.exceptions.RegraNegocioException;
-import br.com.arthenyo.agendamento_docas_api.repository.FornecerdorRepository;
+import br.com.arthenyo.agendamento_docas_api.exceptions.ConflitoException;
+import br.com.arthenyo.agendamento_docas_api.repository.FornecedorRepository;
+import br.com.arthenyo.agendamento_docas_api.validation.CnpjValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FornecedorService {
 
-    private final FornecerdorRepository fornecerdorRepository;
+    private final FornecedorRepository fornecedorRepository;
 
-    public FornecedorService(FornecerdorRepository fornecerdorRepository) {
-        this.fornecerdorRepository = fornecerdorRepository;
+    public FornecedorService(FornecedorRepository fornecedorRepository) {
+        this.fornecedorRepository = fornecedorRepository;
     }
 
     @Transactional
-    public FornecedorResponseDto criarFornecedor(FornecedorRequestDto dto){
-        boolean existe = fornecerdorRepository.existsByCnpj(dto.cnpj());
-        if(!existe){
-            Fornecedor fornecedor = new Fornecedor();
-            fornecedor.setCnpj(dto.cnpj());
-            fornecedor.setRazao_social(dto.razaoSocial());
-            fornecedor = fornecerdorRepository.save(fornecedor);
-            return new FornecedorResponseDto(fornecedor);
-        }else {
-            throw new RegraNegocioException("Fornecedor ja cadastrado com esse CNPJ: " + dto.cnpj());
+    public FornecedorResponseDto criarFornecedor(FornecedorRequestDto dto) {
+        String cnpj = CnpjValidator.normalizar(dto.cnpj());
+        if (fornecedorRepository.existsByCnpj(cnpj)) {
+            throw new ConflitoException("Fornecedor já cadastrado com esse CNPJ: " + cnpj);
         }
+        Fornecedor fornecedor = new Fornecedor(null, cnpj, dto.razaoSocial());
+        return new FornecedorResponseDto(fornecedorRepository.save(fornecedor));
     }
 }

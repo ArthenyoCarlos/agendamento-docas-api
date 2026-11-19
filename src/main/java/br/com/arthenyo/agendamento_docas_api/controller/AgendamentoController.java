@@ -57,7 +57,7 @@ public class AgendamentoController {
     }
 
     @PatchMapping("/{id}/cancelar")
-    public ResponseEntity<Void> cancelar(@PathVariable Long id, @RequestBody CancelamentoRequestDto dto) {
+    public ResponseEntity<Void> cancelar(@PathVariable Long id, @RequestBody @Valid CancelamentoRequestDto dto) {
         agendamentoService.cancelar(id, dto.motivo());
         return ResponseEntity.noContent().build();
     }

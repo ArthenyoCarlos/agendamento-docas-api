@@ -21,7 +21,7 @@ public record AgendamentoResponseDto(
     public AgendamentoResponseDto(Agendamento entity){
         this(
                 entity.getId(),
-                entity.getFornecedor().getRazao_social(),
+                entity.getFornecedor().getRazaoSocial(),
                 entity.getDoca().getCodigo(),
                 entity.getPlacaVeiculo(),
                 entity.getInicio(),

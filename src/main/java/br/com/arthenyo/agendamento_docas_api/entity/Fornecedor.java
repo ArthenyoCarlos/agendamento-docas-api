@@ -19,16 +19,16 @@ public class Fornecedor {
     @Column(nullable = false, unique = true)
     private String cnpj;
 
-    @Column(nullable = false)
-    private String razao_social;
+    @Column(name = "razao_social", nullable = false)
+    private String razaoSocial;
 
     public Fornecedor() {
     }
 
-    public Fornecedor(Long id, String cnpj, String razao_social) {
+    public Fornecedor(Long id, String cnpj, String razaoSocial) {
         this.id = id;
         this.cnpj = cnpj;
-        this.razao_social = razao_social;
+        this.razaoSocial = razaoSocial;
     }
 
     public Long getId() {
@@ -43,11 +43,11 @@ public class Fornecedor {
         this.cnpj = cnpj;
     }
 
-    public String getRazao_social() {
-        return razao_social;
+    public String getRazaoSocial() {
+        return razaoSocial;
     }
 
-    public void setRazao_social(String razao_social) {
-        this.razao_social = razao_social;
+    public void setRazaoSocial(String razaoSocial) {
+        this.razaoSocial = razaoSocial;
     }
 }

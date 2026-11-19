@@ -1,66 +1,63 @@
 package br.com.arthenyo.agendamento_docas_api.controller.handler;
 
-import br.com.arthenyo.agendamento_docas_api.exceptions.*;
+import br.com.arthenyo.agendamento_docas_api.exceptions.ConflitoException;
+import br.com.arthenyo.agendamento_docas_api.exceptions.ObjetoNaoEncontradoException;
+import br.com.arthenyo.agendamento_docas_api.exceptions.RegraNegocioException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
-public class ControllerHandler {
+public class ControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ObjetoNaoEncontradoException.class)
-    public ResponseEntity<ErroResposta> handleObjetoNaoEncontrado(ObjetoNaoEncontradoException ex) {
-        ErroResposta erroResposta = new ErroResposta
-                (
-                        ex.getMessage(),
-                        404,
-                        System.currentTimeMillis(),
-                        null,
-                        CodigoErro.OBJETO_NAO_ENCONTRADO
-                );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroResposta);
+    public ProblemDetail handleObjetoNaoEncontrado(ObjetoNaoEncontradoException ex) {
+        return problema(HttpStatus.NOT_FOUND, "Recurso não encontrado", ex.getMessage());
     }
 
-    @ExceptionHandler(ConflitosDeDadosExceptions.class)
-    public ResponseEntity<ErroResposta> handleComflitoDeDados(ConflitosDeDadosExceptions ex) {
-        ErroResposta erroResposta = new ErroResposta
-                (
-                        ex.getMessage(),
-                        409,
-                        System.currentTimeMillis(),
-                        null,
-                        CodigoErro.CONFLITO_DADOS
-                );
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(erroResposta);
+    @ExceptionHandler(ConflitoException.class)
+    public ProblemDetail handleConflito(ConflitoException ex) {
+        return problema(HttpStatus.CONFLICT, "Conflito", ex.getMessage());
     }
 
     @ExceptionHandler(RegraNegocioException.class)
-    public ResponseEntity<ErroResposta> handleRegraNegocio(RegraNegocioException ex) {
-        ErroResposta erroResposta = new ErroResposta
-                (
-                        ex.getMessage(),
-                        422,
-                        System.currentTimeMillis(),
-                        null,
-                        CodigoErro.REGRA_DE_NEGOCIO
-                );
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(erroResposta);
+    public ProblemDetail handleRegraNegocio(RegraNegocioException ex) {
+        return problema(HttpStatus.UNPROCESSABLE_CONTENT, "Regra de negócio violada", ex.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleIntegridade(DataIntegrityViolationException ex) {
+        return problema(HttpStatus.CONFLICT, "Conflito", "Registro duplicado ou inconsistente.");
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatusCode status,
+                                                                  WebRequest request) {
+        ProblemDetail resposta = problema(HttpStatus.BAD_REQUEST, "Dados inválidos", "Um ou mais dados são inválidos.");
+        resposta.setProperty("erros", ex.getBindingResult().getAllErrors().stream()
+                .map(erro -> Map.of(
+                        "campo", erro instanceof FieldError campo ? campo.getField() : erro.getObjectName(),
+                        "mensagem", Objects.requireNonNullElse(erro.getDefaultMessage(), "Inválido")))
+                .toList());
+        return handleExceptionInternal(ex, resposta, headers, status, request);
+    }
+
+    private ProblemDetail problema(HttpStatus status, String titulo, String detalhe) {
+        ProblemDetail resposta = ProblemDetail.forStatusAndDetail(status, detalhe);
+        resposta.setTitle(titulo);
+        return resposta;
     }
 }
