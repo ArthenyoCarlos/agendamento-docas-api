@@ -12,7 +12,7 @@ POST {{baseUrl}}/docas
 Content-Type: application/json
 
 {
-  "tipo": "REFRIGERADA"
+  "tipo": "SECA"
 }
 
 
@@ -34,14 +34,34 @@ Content-Type: application/json
 
 ### AGENDAMENTO
 
-POST{{baseUrl}}/agendamentos
+POST {{baseUrl}}/agendamentos
 Content-Type: application/json
 
 {
   "fornecedorId": 1,
-  "docaId": 2,
+  "docaId": 1,
   "placaVeiculo": "QWE1R23",
-  "inicio": "2026-11-18T08:00:00",
+  "inicio": "2026-11-20T13:00:00",
   "quantidadePaletes": 10,
   "tipoCarga": "REFRIGERADA"
+}
+
+### Consultar agenda por doca e data
+GET {{baseUrl}}/agendamentos?docaId=1&data=2026-11-20
+
+### Buscar agendamento
+GET {{baseUrl}}/agendamentos/1
+
+### Realizar check-in
+PATCH {{baseUrl}}/agendamentos/1/check-in
+
+### Finalizar agendamento após o check-in
+PATCH {{baseUrl}}/agendamentos/1/finalizar
+
+### Cancelar um agendamento ainda agendado
+PATCH {{baseUrl}}/agendamentos/1/cancelar
+Content-Type: application/json
+
+{
+  "motivo": "Veículo indisponível para a entrega."
 }

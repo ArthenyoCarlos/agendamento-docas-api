@@ -4,6 +4,7 @@ import br.com.arthenyo.agendamento_docas_api.dto.FornecedorRequestDto;
 import br.com.arthenyo.agendamento_docas_api.dto.FornecedorResponseDto;
 import br.com.arthenyo.agendamento_docas_api.entity.Fornecedor;
 import br.com.arthenyo.agendamento_docas_api.exceptions.ConflitosDeDadosExceptions;
+import br.com.arthenyo.agendamento_docas_api.exceptions.RegraNegocioException;
 import br.com.arthenyo.agendamento_docas_api.repository.FornecerdorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class FornecedorService {
             fornecedor = fornecerdorRepository.save(fornecedor);
             return new FornecedorResponseDto(fornecedor);
         }else {
-            throw new ConflitosDeDadosExceptions("Fornecedor ja cadastrado com esse CNPJ: " + dto.cnpj());
+            throw new RegraNegocioException("Fornecedor ja cadastrado com esse CNPJ: " + dto.cnpj());
         }
     }
 }

@@ -1,9 +1,6 @@
 package br.com.arthenyo.agendamento_docas_api.controller.handler;
 
-import br.com.arthenyo.agendamento_docas_api.exceptions.CodigoErro;
-import br.com.arthenyo.agendamento_docas_api.exceptions.ConflitosDeDadosExceptions;
-import br.com.arthenyo.agendamento_docas_api.exceptions.ErroResposta;
-import br.com.arthenyo.agendamento_docas_api.exceptions.ObjetoNaoEncontradoException;
+import br.com.arthenyo.agendamento_docas_api.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -39,6 +36,19 @@ public class ControllerHandler {
                         System.currentTimeMillis(),
                         null,
                         CodigoErro.CONFLITO_DADOS
+                );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erroResposta);
+    }
+
+    @ExceptionHandler(RegraNegocioException.class)
+    public ResponseEntity<ErroResposta> handleRegraNegocio(RegraNegocioException ex) {
+        ErroResposta erroResposta = new ErroResposta
+                (
+                        ex.getMessage(),
+                        422,
+                        System.currentTimeMillis(),
+                        null,
+                        CodigoErro.REGRA_DE_NEGOCIO
                 );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erroResposta);
     }
